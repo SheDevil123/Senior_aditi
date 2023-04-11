@@ -323,6 +323,8 @@ def get_player_choice(board, player, computer):
     
     # create a function to handle clicks on the board
     def board_click(event):
+
+        print("click")
         x, y = event.x, event.y
         # determine which cell was clicked
         col = (x - 20) // 67
@@ -368,7 +370,7 @@ def play_game():
             question = generate_question(diff_level)
             question_difficulties.append(question['difficulty'])
             answer = get_answer(question)
-            if not answer_question(question, answer):
+            if not answer_question(question):
                 print("Incorrect answer! You cannot make a move.")
                 player = "X"
                 incorrect_answers += 1
@@ -459,7 +461,8 @@ def play_game():
     print("Number of incorrect answers: " + str(incorrect_answers))
     print("Question difficulties: " + str(question_difficulties))
 
-   
+play_game()
 # Start the Tkinter event loop
 root.mainloop()
+
 

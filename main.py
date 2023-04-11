@@ -180,7 +180,7 @@ box=pygame.Surface((200,200))
 get_question=True
 option_box=pygame.Surface((600,150))
 difficulty=1
-phase="player"
+phase="question"
 wait=False,False
 #creating rectangles for the game
 box_rects=[]
@@ -205,7 +205,7 @@ while True:
                 score=[0,0,0]
                 difficulty=1
                 board=[None]*9
-                phase="player"
+                phase="question"
                 wait=False,False
                 get_question=True
                 incorrect=0
@@ -248,6 +248,7 @@ while True:
         board=[None]*9
         phase="end_game"
         continue
+    # To check for tie
     if not empty:
         for i,j in enumerate(box_rects):
             box.fill((52, 84, 209))
