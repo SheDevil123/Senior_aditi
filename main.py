@@ -1,9 +1,7 @@
 import pygame
 import random
-# from tkinter import *
-# from tkinter import messagebox
 import time 
-import sys
+import csv_bs
 
 start_time = time.time()
 incorrect=0
@@ -171,16 +169,31 @@ screen.fill((108, 207, 246))
 
 font=pygame.font.SysFont('arial',40) 
 small_font=pygame.font.SysFont('arial',20)
+large_font=pygame.font.SysFont('arial',60)
 
 board=[None]*9
 empty=[i for i in range(9)]
 clock=pygame.time.Clock()
 box=pygame.Surface((200,200))
 
+#setup for login page
+username,password='',''
+active=-1
+login_rects=[pygame.Rect((150,400),(400,30)),pygame.Rect((150,500),(400,30))]
+looks=[pygame.Rect((148,398),(404,34)),pygame.Rect((148,498),(404,34))]
+print(login_rects[0].right)
+login_box=pygame.Surface((400,30))
+login=True
+on_top=False
+txt=small_font.render("click here!!",True,(0,0,0))
+the_rect=txt.get_rect(center=(400,600))
+entered=False
+login_try=""
+
 get_question=True
 option_box=pygame.Surface((600,150))
 difficulty=1
-phase="question"
+phase="login"
 wait=False,False
 #creating rectangles for the game
 box_rects=[]
@@ -211,6 +224,21 @@ while True:
                 incorrect=0
                 empty=[i for i in range(9)]
                 questions()
+            if phase=='login':
+                if active==0:
+                    if i.key==pygame.K_BACKSPACE:
+                        username=username[:-1]
+                    else:
+                        username+=i.unicode
+                if active==1:
+                    if i.key==pygame.K_BACKSPACE:
+                        password=password[:-1]
+                    else:
+                        if not i.unicode==r'\r':
+                            password+=i.unicode
+                if i.key==pygame.K_RETURN and phase=='login':
+                    username=username[:-1]
+                    entered=True
     # pygame.draw.line(screen,(0,0,0),(200,150),(200,750),5)
     # pygame.draw.line(screen,(0,0,0),(400,150),(400,750),5)
     # pygame.draw.line(screen,(0,0,0),(0,150),(600,150),5)
@@ -220,6 +248,7 @@ while True:
     res=player_wins(board)
     #print(phase,res)
     mouse_buttons=pygame.mouse.get_pressed()
+    mouse=pygame.mouse.get_pos()
     if res=="player":
         for i,j in enumerate(box_rects):
             box.fill((52, 84, 209))
@@ -417,6 +446,69 @@ while True:
             txt_rect=txt.get_rect(center=(300,400))
             screen.blit(txt,txt_rect)
         pygame.display.update() 
+    elif phase=='login':
+        #print(username,password)
+        screen.fill((108, 207, 246))
+        for j,i in enumerate(login_rects):
+            if mouse_buttons[0] and not login_rects[1].collidepoint(mouse) and not login_rects[0].collidepoint(mouse):
+                active=-1
+            if active==j:
+                x=(255, 240, 124)
+                pygame.draw.rect(screen,(0,0,0),looks[j],2)
+                #print(i.right)
+            else:
+                x=128, 255, 114
+            login_box.fill(x)
+            if j==0:
+                txt=small_font.render(username,True,(0,0,0))
+                txt_rect=txt.get_rect(center=(200,15))
+                login_box.blit(txt,txt_rect)
+            else:
+                txt=small_font.render(len(password)*"*",True,(0,0,0))
+                txt_rect=txt.get_rect(center=(200,15))
+                login_box.blit(txt,txt_rect)
+            screen.blit(login_box,i)
+            txt=small_font.render("Username",True,(0,0,0))
+            screen.blit(txt,(50,400))
+            txt=small_font.render("Password",True,(0,0,0))
+            screen.blit(txt,(50,500))
+            if i.collidepoint(mouse) and mouse_buttons[0]:
+                active=j
+        if the_rect.collidepoint(mouse):
+            color=(230, 57, 70)
+            if mouse_buttons[0]:
+                phase="new_user"
+        else:color=100, 50, 255
+        txt=small_font.render("click here!!",True,color)
+        screen.blit(txt,the_rect)
+        txt=small_font.render("To create a new account",True,(0,0,0))
+        txt_rect=txt.get_rect(center=(250,600))
+        screen.blit(txt,txt_rect)
+
+        txt=large_font.render("LOGIN",True,(0,0,0))
+        txt_rect=txt.get_rect(center=(300,200))
+        screen.blit(txt,txt_rect)
+        txt=small_font.render("press ENTER after filling the details.",True,(0,0,0))
+        txt_rect=txt.get_rect(center=(300,250))
+        screen.blit(txt,txt_rect)
+        
+        if entered:
+            out=csv_bs.login(username,password,"hello.csv")
+            if out==-1:login_try="Not a valid username!!"
+            elif out==-2:login_try="Wrong password!!"
+            elif out==-3:login_try="Username not found!!"
+            else:
+                login_try="Log in Successful!!"
+                txt=small_font.render(login_try,True,(0,0,0))
+                txt_rect=txt.get_rect(center=(300,350))
+                screen.blit(txt,txt_rect)
+                phase="question"
+            entered=False
+        txt=small_font.render(login_try,True,(0,0,0))
+        txt_rect=txt.get_rect(center=(300,350))
+        screen.blit(txt,txt_rect)        
+        pygame.display.update()
+
     pygame.display.update()
     clock.tick(60)
 
