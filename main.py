@@ -76,7 +76,12 @@ def predict():
             if player_wins(copy):
                 return i+1
 
+def score_cal(time,correct):
+    #print(time,correct)
+    return 100-int(time)+(int(correct)*10)
 
+
+print((csv_bs.best_score("scores.csv",score_cal)))
 # Define three sets of questions with varying difficulty levels
 def questions():
     global easy_questions,medium_questions,hard_questions
@@ -170,6 +175,7 @@ screen.fill((108, 207, 246))
 font=pygame.font.SysFont('arial',40) 
 small_font=pygame.font.SysFont('arial',20)
 large_font=pygame.font.SysFont('arial',60)
+vsmall_font=pygame.font.SysFont('arial',10)
 
 board=[None]*9
 empty=[i for i in range(9)]
@@ -237,7 +243,10 @@ while True:
                         if not i.unicode==r'\r':
                             password+=i.unicode
                 if i.key==pygame.K_RETURN and phase=='login':
-                    username=username[:-1]
+                    if active==0:
+                        username=username[:-1]
+                    else:
+                        password=password[:-1]
                     entered=True
     # pygame.draw.line(screen,(0,0,0),(200,150),(200,750),5)
     # pygame.draw.line(screen,(0,0,0),(400,150),(400,750),5)

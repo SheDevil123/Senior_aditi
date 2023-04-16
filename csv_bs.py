@@ -25,8 +25,24 @@ def login(username,password,file_path):
                     return -2 # wrong password 
         return -3 # Username not found
 
+def add_score(username,time,correct,file_path):
+    with open(file_path,"a",newline="") as f:
+        csv_writer=csv.writer(f)
+        csv_writer.writerow([username,time,correct])
+    
 
-                
+def best_score(file_path,func):
+    with open(file_path) as f:
+        csv_reader=csv.reader(f)
+        next(csv_reader)
+        highest=0
+        u=""
+        for i in csv_reader:
+            temp=func(i[1],i[2])
+            if temp>highest:
+                highest=temp
+                u=i[0]
+    return highest,u   
         
 
 

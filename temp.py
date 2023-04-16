@@ -2,8 +2,7 @@ import pygame
 import csv_bs
 
 
-print(csv_bs.login("kharghuvel    ","idk","hello.csv"))
-
+print(csv_bs.add_score("kharghuvel",100,3,"scores.csv"))
 # pygame.init()
 # screen=pygame.display.set_mode((400,400))
 # clock=pygame.time.Clock()
