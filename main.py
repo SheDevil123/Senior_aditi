@@ -3,6 +3,7 @@ import random
 import time 
 import csv_bs
 
+timeee=0
 start_time = time.time()
 incorrect=0
 score=[0,0,0]
@@ -11,6 +12,11 @@ def new_line(s):
         return s," "
     ind=s.find(" ",75)
     return s[:ind],s[ind:]
+
+def cur_user_printing():
+    txt=small_font.render(f"Username: {username}  ",True,(0,0,0))
+    txt_rect=txt.get_rect(topright=(600,0))
+    screen.blit(txt,txt_rect)
 
 def drawing(i,j):
     if not board[i]:
@@ -216,6 +222,7 @@ for i in range(4):
 while True:
     
     screen.fill((108, 207, 246))
+    cur_user_printing()
     for i in pygame.event.get():
         if i.type==256:
             pygame.quit()
@@ -270,6 +277,9 @@ while True:
         res2=res
         res=''
         board=[None]*9
+        timeee=time.time()-start_time
+        start_time=time.time()
+        csv_bs.add_score(username,int(timeee),sum(score),"scores.csv")
         phase="end_game"
         continue
     elif res=="comp":
@@ -285,6 +295,9 @@ while True:
         res=''
         board=[None]*9
         phase="end_game"
+        timeee=time.time()-start_time
+        csv_bs.add_score(username,int(timeee),sum(score),"scores.csv")
+        start_time=time.time()
         continue
     # To check for tie
     if not empty:
@@ -312,6 +325,7 @@ while True:
         #print(mouse_buttons)
         if wait[1] and wait[0]:
             screen.fill((108, 207, 246))
+            cur_user_printing()
             for i,j in enumerate(box_rects):
                 box.fill((52, 84, 209))
                 drawing(i,j)
@@ -325,6 +339,7 @@ while True:
             continue
         elif not wait[1] and wait[0]:
             screen.fill((108, 207, 246))
+            cur_user_printing()
             for i,j in enumerate(box_rects):
                 box.fill((52, 84, 209))
                 drawing(i,j)
@@ -359,6 +374,7 @@ while True:
         phase="question"
         #print(choice)
         screen.fill((108, 207, 246))
+        cur_user_printing()
         for i,j in enumerate(box_rects):
             box.fill((52, 84, 209))
             drawing(i,j)
@@ -381,6 +397,7 @@ while True:
         #print(question)
         #print("in")
         screen.fill((108, 207, 246))
+        cur_user_printing()
         #print(len(option_box_rects))
         mouse=pygame.mouse.get_pos()
         
@@ -418,6 +435,7 @@ while True:
                 time.sleep(1)
     elif phase=="result":
         screen.fill((108, 207, 246))
+        cur_user_printing()
         if question['options'][ans]==question['answer']:
             txt=small_font.render('Correct Answer!!',True,(0,0,0))
             txt_rect=txt.get_rect(center=(300,300))
@@ -436,6 +454,7 @@ while True:
         time.sleep(2)
     elif phase=="end_game":
         screen.fill((108, 207, 246)) 
+        cur_user_printing()
         if res2=='player':
             txt=small_font.render(f'number of questions answered correctly: {sum(score)}',True,(0,0,0))
             txt_rect=txt.get_rect(center=(300,300))
@@ -454,6 +473,17 @@ while True:
             txt=font.render('Press space to try again!!',True,(0,0,0))
             txt_rect=txt.get_rect(center=(300,400))
             screen.blit(txt,txt_rect)
+        s,u=csv_bs.best_score("scores.csv",score_cal)
+        txt=small_font.render(f"Highest Score: {s}",True,(0,0,0))
+        txt_rect=txt.get_rect(topleft=(100,500))
+        screen.blit(txt,txt_rect)
+        txt=small_font.render(f"Username: {u}",True,(0,0,0))
+        txt_rect=txt.get_rect(topleft=(100,530))
+        screen.blit(txt,txt_rect)
+        print(timeee,sum(score))
+        txt=font.render(f"Your Score: {score_cal(timeee,sum(score))}",True,(0,0,0))
+        txt_rect=txt.get_rect(topleft=(100,600))
+        screen.blit(txt,txt_rect)
         pygame.display.update() 
     elif phase=='login':
         #print(username,password)
@@ -512,12 +542,39 @@ while True:
                 txt_rect=txt.get_rect(center=(300,350))
                 screen.blit(txt,txt_rect)
                 phase="question"
+                start_time=time.time()
             entered=False
         txt=small_font.render(login_try,True,(0,0,0))
         txt_rect=txt.get_rect(center=(300,350))
         screen.blit(txt,txt_rect)        
         pygame.display.update()
-
+    elif phase=="new_user":
+        screen.fill((108, 207, 246))
+        for j,i in enumerate(login_rects):
+            if mouse_buttons[0] and not login_rects[1].collidepoint(mouse) and not login_rects[0].collidepoint(mouse):
+                active=-1
+            if active==j:
+                x=(255, 240, 124)
+                pygame.draw.rect(screen,(0,0,0),looks[j],2)
+                #print(i.right)
+            else:
+                x=128, 255, 114
+            login_box.fill(x)
+            if j==0:
+                txt=small_font.render(username,True,(0,0,0))
+                txt_rect=txt.get_rect(center=(200,15))
+                login_box.blit(txt,txt_rect)
+            else:
+                txt=small_font.render(len(password)*"*",True,(0,0,0))
+                txt_rect=txt.get_rect(center=(200,15))
+                login_box.blit(txt,txt_rect)
+            screen.blit(login_box,i)
+            txt=small_font.render("Username",True,(0,0,0))
+            screen.blit(txt,(50,400))
+            txt=small_font.render("Password",True,(0,0,0))
+            screen.blit(txt,(50,500))
+            if i.collidepoint(mouse) and mouse_buttons[0]:
+                active=j
     pygame.display.update()
     clock.tick(60)
 
